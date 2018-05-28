@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('tasks', 'TasksController'); 
+Route::get('tasks/{id}/copy', 'TasksController@copy');
