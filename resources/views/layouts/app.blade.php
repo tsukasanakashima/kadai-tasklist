@@ -6,6 +6,10 @@
     </head>
 
     <body>
+        @include('commons.tasks')
+        
         @yield('content')
+        
+        
     </body>
 </html>
