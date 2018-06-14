@@ -8,15 +8,12 @@ use App\Task;
 
 class TasksController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function index()
     {
         $data = [];
         if (\Auth::check()) {
+            
             $user = \Auth::user();
             $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
 
@@ -25,7 +22,7 @@ class TasksController extends Controller
                 'tasks' => $tasks,
             ];
             $data += $this->counts($user);
-            return view('users.show', $data);
+            return view('tasks.index', $data);
         }else {
             return view('welcome');
         }
@@ -60,10 +57,10 @@ class TasksController extends Controller
         ]);
 
         
-        $task = new Task;
-        $task->status = $request->status; 
-        $task->content = $request->content;
-        $task->save();
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);
 
         return redirect('/');
     }
@@ -93,9 +90,14 @@ class TasksController extends Controller
     {
         $task = Task::find($id);
 
-        return view('tasks.edit', [
+        if (\Auth::user()->id === $task->user_id) {
+            return view('tasks.edit', [
             'task' => $task,
         ]);
+        }
+        else{
+            return redirect('/');
+        }
     }
 
     /**
